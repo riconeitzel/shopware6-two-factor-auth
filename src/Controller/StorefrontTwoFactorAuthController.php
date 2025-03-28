@@ -15,19 +15,27 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Attribute\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 
-#[Route(defaults: ['_routeScope' => ['storefront']])]
 class StorefrontTwoFactorAuthController extends StorefrontController
 {
+    private $totpService;
+    private $dispatcher;
+    private $logoutRoute;
+
     public function __construct(
-        private readonly TimebasedOneTimePasswordServiceInterface $totpService,
-        private readonly EventDispatcherInterface $dispatcher,
-        private readonly AbstractLogoutRoute $logoutRoute
+        TimebasedOneTimePasswordServiceInterface $totpService,
+        EventDispatcherInterface $dispatcher,
+        AbstractLogoutRoute $logoutRoute
     ) {
+        $this->totpService = $totpService;
+        $this->dispatcher = $dispatcher;
+        $this->logoutRoute = $logoutRoute;
     }
 
-    #[Route(path: '/rl-2fa/verification', name: 'frontend.rl2fa.verification', methods: ['GET', 'POST'])]
+    /**
+     * @Route("/rl-2fa/verification", name="frontend.rl2fa.verification", methods={"GET", "POST"})
+     */
     public function verification(Request $request, SalesChannelContext $context): Response
     {
         $twoFactorSecret = $context->getCustomer()?->getCustomFields()['rl_2fa_secret'] ?? null;
@@ -54,7 +62,9 @@ class StorefrontTwoFactorAuthController extends StorefrontController
         return $this->render('@RuneLaenenTwoFactorAuth/storefront/page/2fa/verification.html.twig');
     }
 
-    #[Route(path: '/rl-2fa/verification/cancel', name: 'frontend.rl2fa.verification.cancel', methods: ['GET'])]
+    /**
+     * @Route("/rl-2fa/verification/cancel", name="frontend.rl2fa.verification.cancel", methods={"GET"})
+     */
     public function cancelVerification(SalesChannelContext $context, RequestDataBag $dataBag): RedirectResponse
     {
         if ($context->getCustomer() !== null) {

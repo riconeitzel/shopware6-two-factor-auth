@@ -10,16 +10,18 @@ use BaconQrCode\Renderer\RendererStyle\RendererStyle;
 use BaconQrCode\Writer;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Attribute\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 
 class QrCodeController
 {
-    #[Route(
-        path: 'admin/rl-2fa/qr-code/secret.png',
-        name: 'rl-2fa.qr-code.secret',
-        defaults: ['auth_required' => false, '_routeScope' => ['administration']],
-        methods: ['GET'])
-    ]
+    /**
+     * @Route(
+     *     path="admin/rl-2fa/qr-code/secret.png",
+     *     name="rl-2fa.qr-code.secret",
+     *     defaults={"auth_required"=false, "_routeScope"={"administration"}},
+     *     methods={"GET"}
+     * )
+     */
     public function qrCode(Request $request): Response
     {
         $qrUrl = $request->query->getString('qrUrl');

@@ -6,30 +6,37 @@ namespace RuneLaenen\TwoFactorAuth\Controller;
 
 use RuneLaenen\TwoFactorAuth\Service\ConfigurationService;
 use RuneLaenen\TwoFactorAuth\Service\TimebasedOneTimePasswordServiceInterface;
-use Shopware\Core\PlatformRequest;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Shopware\Components\Routing\RouterInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Routing\RouterInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 
-#[Route(path: '/api/_action/rl-2fa', defaults: ['_routeScope' => ['api']])]
-class TwoFactorAuthenticationApiController extends AbstractController
+class TwoFactorAuthenticationApiController extends Controller
 {
+    private $totpService;
+    private $router;
+    private $configurationService;
+
     public function __construct(
-        private readonly TimebasedOneTimePasswordServiceInterface $totpService,
-        private readonly RouterInterface $router,
-        private readonly ConfigurationService $configurationService
+        TimebasedOneTimePasswordServiceInterface $totpService,
+        RouterInterface $router,
+        ConfigurationService $configurationService
     ) {
+        $this->totpService = $totpService;
+        $this->router = $router;
+        $this->configurationService = $configurationService;
     }
 
-    #[Route(path: '/generate-secret', name: 'api.action.rl-2fa.generate-secret', methods: ['GET'])]
+    /**
+     * @Route("/api/_action/rl-2fa/generate-secret", name="api.action.rl-2fa.generate-secret", methods={"GET"})
+     */
     public function generateSecret(Request $request): JsonResponse
     {
         $company = $this->configurationService->getAdministrationCompany(
-            $request->attributes->get(PlatformRequest::ATTRIBUTE_SALES_CHANNEL_ID)
+            $request->attributes->get('salesChannelId')
         );
 
         $secret = $this->totpService->createSecret();
@@ -51,7 +58,9 @@ class TwoFactorAuthenticationApiController extends AbstractController
         ]);
     }
 
-    #[Route(path: '/validate-secret', name: 'api.action.rl-2fa.validate-secret', methods: ['POST'])]
+    /**
+     * @Route("/api/_action/rl-2fa/validate-secret", name="api.action.rl-2fa.validate-secret", methods={"POST"})
+     */
     public function validateSecret(Request $request): JsonResponse
     {
         if (empty($request->get('secret')) || empty($request->get('code'))) {

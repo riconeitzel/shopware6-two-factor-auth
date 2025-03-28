@@ -6,14 +6,13 @@ namespace RuneLaenen\TwoFactorAuth\Subscriber;
 
 use RuneLaenen\TwoFactorAuth\Event\StorefrontTwoFactorAuthEvent;
 use RuneLaenen\TwoFactorAuth\Event\StorefrontTwoFactorCancelEvent;
-use Shopware\Core\Checkout\Customer\Event\CustomerLoginEvent;
-use Shopware\Core\SalesChannelRequest;
+use Shopware\Components\DependencyInjection\Container;
+use Shopware\Components\Routing\RouterInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\HttpKernel\Event\ControllerEvent;
+use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
-use Symfony\Component\Routing\RouterInterface;
 
 class CustomerLoginSubscriber implements EventSubscriberInterface
 {
@@ -28,20 +27,20 @@ class CustomerLoginSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            CustomerLoginEvent::class => 'onCustomerLoginEvent',
+            'Shopware_Modules_Admin_Login_Successful' => 'onCustomerLoginEvent',
             KernelEvents::CONTROLLER => 'onController',
             StorefrontTwoFactorAuthEvent::class => 'removeSession',
             StorefrontTwoFactorCancelEvent::class => 'removeSession',
         ];
     }
 
-    public function onController(ControllerEvent $event): void
+    public function onController(FilterControllerEvent $event): void
     {
         if (!$this->requestStack->getSession()->has(self::SESSION_NAME)) {
             return;
         }
 
-        if (!$event->isMainRequest()) {
+        if (!$event->isMasterRequest()) {
             return;
         }
 
@@ -49,7 +48,7 @@ class CustomerLoginSubscriber implements EventSubscriberInterface
             return;
         }
 
-        if (!$event->getRequest()->attributes->get(SalesChannelRequest::ATTRIBUTE_IS_SALES_CHANNEL_REQUEST)) {
+        if (!$event->getRequest()->attributes->get('isShopwareStorefrontRequest')) {
             return;
         }
 
@@ -74,9 +73,11 @@ class CustomerLoginSubscriber implements EventSubscriberInterface
         $response->send();
     }
 
-    public function onCustomerLoginEvent(CustomerLoginEvent $event): void
+    public function onCustomerLoginEvent(): void
     {
-        if (empty($event->getCustomer()?->getCustomFields()['rl_2fa_secret'])) {
+        $customer = Shopware()->Modules()->Admin()->sGetUserData();
+
+        if (empty($customer['additional']['user']['rl_2fa_secret'])) {
             return;
         }
 

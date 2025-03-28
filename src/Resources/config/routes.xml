@@ -5,5 +5,54 @@
         xsi:schemaLocation="http://symfony.com/schema/routing
         http://symfony.com/schema/routing/routing-1.0.xsd">
 
-    <import resource="../../Controller" type="attribute" />
+    <route id="rl-2fa.qr-code.secret" path="/admin/rl-2fa/qr-code/secret.png">
+        <default key="_controller">RuneLaenen\TwoFactorAuth\Controller\QrCodeController::qrCode</default>
+        <default key="auth_required">false</default>
+        <default key="_routeScope">administration</default>
+        <requirement key="_method">GET</requirement>
+    </route>
+
+    <route id="frontend.rl2fa.verification" path="/rl-2fa/verification">
+        <default key="_controller">RuneLaenen\TwoFactorAuth\Controller\StorefrontTwoFactorAuthController::verification</default>
+        <requirement key="_method">GET|POST</requirement>
+    </route>
+
+    <route id="frontend.rl2fa.verification.cancel" path="/rl-2fa/verification/cancel">
+        <default key="_controller">RuneLaenen\TwoFactorAuth\Controller\StorefrontTwoFactorAuthController::cancelVerification</default>
+        <requirement key="_method">GET</requirement>
+    </route>
+
+    <route id="api.action.rl-2fa.generate-secret" path="/api/_action/rl-2fa/generate-secret">
+        <default key="_controller">RuneLaenen\TwoFactorAuth\Controller\TwoFactorAuthenticationApiController::generateSecret</default>
+        <requirement key="_method">GET</requirement>
+    </route>
+
+    <route id="api.action.rl-2fa.validate-secret" path="/api/_action/rl-2fa/validate-secret">
+        <default key="_controller">RuneLaenen\TwoFactorAuth\Controller\TwoFactorAuthenticationApiController::validateSecret</default>
+        <requirement key="_method">POST</requirement>
+    </route>
+
+    <route id="widgets.rl-2fa.profile.setup" path="/rl-2fa/profile/setup">
+        <default key="_controller">RuneLaenen\TwoFactorAuth\Controller\TwoFactorAuthenticationController::profileSetup</default>
+        <default key="XmlHttpRequest">true</default>
+        <requirement key="_method">GET</requirement>
+    </route>
+
+    <route id="widgets.rl-2fa.profile.disable" path="/rl-2fa/profile/disable">
+        <default key="_controller">RuneLaenen\TwoFactorAuth\Controller\TwoFactorAuthenticationController::profileDisable</default>
+        <default key="XmlHttpRequest">true</default>
+        <requirement key="_method">GET</requirement>
+    </route>
+
+    <route id="widgets.rl-2fa.profile.disable.post" path="/rl-2fa/profile/disable">
+        <default key="_controller">RuneLaenen\TwoFactorAuth\Controller\TwoFactorAuthenticationController::profileDisablePost</default>
+        <default key="XmlHttpRequest">true</default>
+        <requirement key="_method">POST</requirement>
+    </route>
+
+    <route id="widgets.rl-2fa.profile.validate" path="/rl-2fa/profile/validate">
+        <default key="_controller">RuneLaenen\TwoFactorAuth\Controller\TwoFactorAuthenticationController::validateSecret</default>
+        <default key="XmlHttpRequest">true</default>
+        <requirement key="_method">POST</requirement>
+    </route>
 </routes>

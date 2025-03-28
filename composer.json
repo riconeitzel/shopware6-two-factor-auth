@@ -1,5 +1,5 @@
 {
-    "name": "runelaenen/shopware6-two-factor-auth",
+    "name": "runelaenen/shopware5-two-factor-auth",
     "description": "Two Factor Authentication plugin",
     "type": "shopware-platform-plugin",
     "license": "MIT",
@@ -30,13 +30,12 @@
         }
     },
     "require": {
-        "shopware/core": "~6.6",
+        "shopware/shopware": "~5.7.19",
         "pragmarx/google2fa": "^8.0",
         "bacon/bacon-qr-code": "^2.0"
     },
     "require-dev": {
         "phpro/grumphp-shim": "^1.3",
-        "shopware/platform": "*",
         "symplify/easy-coding-standard": "^9.4",
         "kubawerlos/php-cs-fixer-custom-fixers": "^3.1"
     }

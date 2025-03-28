@@ -1,12 +1,12 @@
 {% block page_account_profile_2fa_disable %}
-    <h3>{{ "rl-2fa.account.disable.title"|trans|sw_sanitize }}</h3>
+    <h3>{{ "rl-2fa.account.disable.title"|trans|striptags }}</h3>
 
     <p>
-        {{ "rl-2fa.account.disable.description"|trans|sw_sanitize }}
+        {{ "rl-2fa.account.disable.description"|trans|striptags }}
     </p>
 
     <form method="POST"
-          action="{{ url('widgets.rl-2fa.profile.disable.post') }}">
+          action="{{ path('widgets.rl-2fa.profile.disable.post') }}">
         <p>
             {% block page_account_profile_2fa_disable_input %}
             <input type="password"
@@ -20,7 +20,7 @@
 
         {% block page_account_profile_2fa_disable_button %}
             <button type="submit" class="account-profile-2fa-setup-verify btn btn-primary btn-block">
-                {{ "rl-2fa.account.disable.submit"|trans|sw_sanitize }}
+                {{ "rl-2fa.account.disable.submit"|trans|striptags }}
             </button>
         {% endblock %}
     </form>
